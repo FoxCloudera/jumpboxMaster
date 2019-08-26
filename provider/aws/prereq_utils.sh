@@ -22,6 +22,11 @@ create_prereqs() {
 #  echo "PROJECT='${PROJECT:?}'" >> .info
 #  echo "CDH_VERSION=${CDH_VERSION:?}" >> .info
 
+# starting_dir
+echo "AWS_REGION=${AWS_REGION:?}" > $starting_dir/provider/aws/.info
+echo "OWNER_TAG=${OWNER_TAG:?}" >> $starting_dir/provider/aws/.info
+echo "starting_dir=${starting_dir:?}" >> $starting_dir/provider/aws/.info
+echo "CLOUD_PROVIDER=${CLOUD_PROVIDER:?}" >> $starting_dir/provider/aws/.info
   #####################################################
   # create VPC
   #####################################################
