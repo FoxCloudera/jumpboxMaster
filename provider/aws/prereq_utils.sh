@@ -9,7 +9,7 @@
 #####################################################
 
 create_prereqs() {
-  if [ -s .info ]; then
+  if [ -s $starting_dir/provider/aws/.info ]; then
     log "Looks like you have not propertly terminated the previous environment, as there are still entries in .info. Execute first terminate.sh and rerun. Exiting..."
     exit 1
   fi
@@ -17,10 +17,10 @@ create_prereqs() {
   #####################################################
   # record main info for the cluster
   #####################################################
-  echo "AWS_REGION=${AWS_REGION:?}" > .info
-  echo "OWNER=${OWNER:?}" >> .info
-  echo "PROJECT='${PROJECT:?}'" >> .info
-  echo "CDH_VERSION=${CDH_VERSION:?}" >> .info
+#  echo "AWS_REGION=${AWS_REGION:?}" > .info
+#  echo "OWNER=${OWNER:?}" >> .info
+#  echo "PROJECT='${PROJECT:?}'" >> .info
+#  echo "CDH_VERSION=${CDH_VERSION:?}" >> .info
 
   #####################################################
   # create VPC
@@ -154,7 +154,7 @@ install_aws_cli() {
 }
 
 #####################################################
-# Function to create director instance
+# Function to create instance
 #####################################################
 create_onenode_instance() {
 	log "Create oneNode ec2 instance"
