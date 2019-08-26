@@ -44,6 +44,16 @@ log() {
 #########################################################
 log "BEGIN setup.sh"
 
+unameOut="$(uname -s)"
+case "${unameOut}" in
+  Linux*)     machine=Linux;;
+  Darwin*)    machine=Mac;;
+  CYGWIN*)    machine=Cygwin;;
+  MINGW*)     machine=MinGw;;
+  *)          machine="UNKNOWN:${unameOut}"
+esac
+log "Current machine is: $machine"
+
 #####################################################
 # first check if JQ is installed
 #####################################################
