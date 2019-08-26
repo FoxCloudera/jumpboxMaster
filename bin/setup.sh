@@ -52,12 +52,12 @@ log "Installing jq"
 jq_v=`jq --version 2>&1`
 if [[ $jq_v = *"command not found"* ]]; then
   if [[ $machine = "Mac" ]]; then
-    sudo curl -L -s -o jq "https://github.com/stedolan/jq/releases/download/jq-1.6/jq-osx-amd64"
+    curl -L -s -o jq "https://github.com/stedolan/jq/releases/download/jq-1.6/jq-osx-amd64"
   else
-    sudo curl -L -s -o jq "https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64"
+    curl -L -s -o jq "https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64"
   fi 
-  sudo chmod +x ./jq
-  sudo cp jq /usr/bin
+  chmod +x ./jq
+  cp jq /usr/bin
 else
   log "jq already installed. Skipping"
 fi
@@ -86,12 +86,12 @@ case "$CLOUD_PROVIDER" in
     		return
   	    fi
   	    if [ $machine = 'Linux' ]; then
-    		sudo yum -y install unzip
+    		yum -y install unzip
   	    fi 
-  	    sudo curl -s -O "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip"
-  	    sudo unzip awscli-bundle.zip
-  	    sudo ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
-	    sudo rm -rf awscli-bundle*
+  	    curl -s -O "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip"
+  	    unzip awscli-bundle.zip
+  	     ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
+	    rm -rf awscli-bundle*
   	    log "Done installing AWS CLI"
             ;;
         azure)
