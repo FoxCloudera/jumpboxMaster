@@ -29,6 +29,10 @@ CLOUD_PROVIDER=$1
 dir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 starting_dir=`pwd`
+echo "starting_dir=${starting_dir:?}" >> $starting_dir/provider/aws/.info
+
+# log the CLOUD_PROVIDER
+echo "CLOUD_PROVIDER=${CLOUD_PROVIDER:?}" >> $starting_dir/provider/aws/.info
 
 # logging function
 log() {
