@@ -8,6 +8,7 @@ docker run -it centos
 
 #install git
 yum install -y git
-cd /jumpboxMaster
+cd /app
 git clone https://github.com/tlepple/jumpboxMaster.git
+cd /jumpboxMaster
 ```
