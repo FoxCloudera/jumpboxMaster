@@ -81,7 +81,7 @@ echo "CLOUD_PROVIDER=${CLOUD_PROVIDER:?}" >> $starting_dir/provider/aws/.info
   # get PEM file
   #####################################################
   aws --region ${AWS_REGION:?} ec2 create-key-pair --key-name ${OWNER_TAG:?}-ingest-demo --query 'KeyMaterial' --output text > $starting_dir/provider/aws/${OWNER_TAG:?}-ingest-demo.pem
-  chmod 400 ${OWNER_TAG:?}-ingest-demo.pem
+  chmod 400  $starting_dir/provider/aws/${OWNER_TAG:?}-ingest-demo.pem
 
   #####################################################
   # create Security Group
