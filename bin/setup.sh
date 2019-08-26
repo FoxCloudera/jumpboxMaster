@@ -68,3 +68,41 @@ if [[ $jq_v = *"command not found"* ]]; then
   echo "Error installing jq. Please see README and install manually"
   exit 1 
 fi  
+
+
+
+#####################################################
+#
+#####################################################
+
+case "$CLOUD_PROVIDER" in
+        aws)
+            echo "execute aws code here.  consider moving to a script.  load functions "
+	    log "Installing AWS_CLI"
+  	    aws_cli_version=`aws --version 2>&1`
+  	    log "Current CLI version: $aws_cli_version"
+  	    if [[ $aws_cli_version = *"aws-cli"* ]]; then
+    		log "AWS CLI already installed. Skipping"
+    		return
+  	    fi
+  	    if [ $machine = 'Linux' ]; then
+    		sudo yum -y install unzip
+  	    fi 
+  	    sudo curl -s -O "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip"
+  	    sudo unzip awscli-bundle.zip
+  	    sudo ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
+	    sudo rm -rf awscli-bundle*
+  	    log "Done installing AWS CLI"
+            ;;
+        azure)
+           echo "execute azure code here"
+            ;;
+        gcp)
+           echo "execute gcp code here"
+            ;;
+        *)
+            echo "you had a different choice... is this block needed?"
+	    ;;
+esac
+
+
