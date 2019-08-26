@@ -75,7 +75,7 @@ create_prereqs() {
   ##################################################### 
   # get PEM file
   #####################################################
-  aws --region ${AWS_REGION:?} ec2 create-key-pair --key-name ${OWNER_TAG:?}-ingest-demo --query 'KeyMaterial' --output text > ${OWNER_TAG:?}-ingest-demo.pem
+  aws --region ${AWS_REGION:?} ec2 create-key-pair --key-name ${OWNER_TAG:?}-ingest-demo --query 'KeyMaterial' --output text > $starting_dir/provider/aws/${OWNER_TAG:?}-ingest-demo.pem
   chmod 400 ${OWNER_TAG:?}-ingest-demo.pem
 
   #####################################################
@@ -96,7 +96,34 @@ create_prereqs() {
   
 }
 
-
+#####################################################
+# Function: delete all the prereqs created for the demo
+#####################################################
+terminate_prereqs() {
+  log "Deleting db subnet ${dbsubnet}..."
+  aws --region ${AWS_REGION:?} rds delete-db-subnet-group --db-subnet-group-name ${dbsubnet}
+  log "Deleting security group ${sg}..."
+  aws --region ${AWS_REGION:?} ec2 delete-security-group --group-id ${sg}
+  log "Deleting subnet ${subnet_id}..."
+  aws --region ${AWS_REGION:?} ec2 delete-subnet --subnet-id ${subnet_id}
+  log "Deleting route table ${rtb}..."
+  aws --region ${AWS_REGION} ec2 delete-route-table --route-table-id ${rtb}
+  if [ "$existingVpc" = "false" ]; then
+    log "Detaching internet gateway from VPC..."
+    aws --region ${AWS_REGION:?} ec2 detach-internet-gateway --vpc-id ${vpc_id} --internet-gateway-id ${igw}
+    log "Deleting internet gateway ${igw}..."
+    aws --region ${AWS_REGION:?} ec2 delete-internet-gateway --internet-gateway-id ${igw}
+    log "Deleting VPC ${vpc_id}..."
+    aws --region ${AWS_REGION:?} ec2 delete-vpc --vpc-id ${vpc_id}
+  else
+    log "Skipping existing internet gateway and VPC..."
+  fi
+  log "Deleting key ${OWNER_TAG:?}-ingest-demo..."
+  aws --region ${AWS_REGION:?} ec2 delete-key-pair --key-name ${OWNER_TAG:?}-ingest-demo
+  mv -f $starting_dir/provider/aws/${OWNER:?}-ingest-demo.pem $starting_dir/provider/aws/.${OWNER:?}-ingest-demo.pem.old.$(date +%s)
+  mv -f $starting_dir/provider/aws/.info $starting_dir/provider/aws/.info.old.$(date +%s)
+  touch $starting_dir/provider/aws/.info
+}
 
 
 
