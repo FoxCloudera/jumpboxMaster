@@ -57,6 +57,7 @@ create_prereqs() {
   if [ "$igw" == "null" ]; then
     igw=`aws --output json --region ${AWS_REGION:?} ec2 create-internet-gateway | jq -r ".InternetGateway.InternetGatewayId"`
     aws --region ${AWS_REGION:?} ec2 attach-internet-gateway --vpc-id ${vpc_id:?} --internet-gateway-id ${igw}
+    aws --region ${AWS_REGION:?} ec2 create-tags --resources ${igw:?} --tags Key=owner,Value=${OWNER_TAG:?} Key=Name,Value=${OWNER_TAG:?}-ingest-demo
   fi
   echo "igw=${igw:?}" >> $starting_dir/provider/aws/.info
   log "Internet gateway used: ${igw:?}"
@@ -67,6 +68,7 @@ create_prereqs() {
   rtb=`aws --output json --region ${AWS_REGION:?} ec2 create-route-table --vpc-id ${vpc_id:?} | jq -r ".RouteTable.RouteTableId"`
   aws --region ${AWS_REGION:?} ec2 create-route --route-table-id ${rtb:?} --destination-cidr-block 0.0.0.0/0 --gateway-id ${igw:?}
   aws --region ${AWS_REGION:?} ec2 associate-route-table  --subnet-id ${subnet_id:?} --route-table-id ${rtb:?}
+  aws --region ${AWS_REGION:?} ec2 create-tags --resources ${rtb:?} --tags Key=owner,Value=${OWNER_TAG:?} Key=Name,Value=${OWNER_TAG:?}-ingest-demo
   echo "rtb=${rtb:?}" >> $starting_dir/provider/aws/.info
   log "Route table used: ${rtb:?}"
  
@@ -87,6 +89,7 @@ create_prereqs() {
   aws --region ${AWS_REGION:?} ec2 authorize-security-group-ingress --group-id ${sg:?} --protocol all --port 0-65535 --cidr `curl -s ipinfo.io/ip`/32
   # added this to map to my home ip address and not the jumpbox server
   #aws --region ${AWS_REGION:?} ec2 authorize-security-group-ingress --group-id ${sg:?} --protocol all --port 0-65535 --cidr ${MY_HOME_IP:?}
+  aws --region ${AWS_REGION:?} ec2 create-tags --resources ${sg:?} --tags Key=owner,Value=${OWNER_TAG:?} Key=Name,Value=${OWNER_TAG:?}-ingest-demo
   echo "sg=${sg:?}" >> $starting_dir/provider/aws/.info
   log "New Security Group in ${AWS_REGION:?} created: ${OWNER_TAG:?}-ingest-demo-SG, ${sg:?}"
 
