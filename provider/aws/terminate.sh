@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # define starting dir
-$starting_dir=`pwd`
-
+starting_dir=`pwd`
+echo $starting_dir
 
 ###########################################################################################################
 # import parameters and utility functions 
