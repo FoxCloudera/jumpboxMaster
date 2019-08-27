@@ -105,8 +105,6 @@ echo "CLOUD_PROVIDER=${CLOUD_PROVIDER:?}" >> $starting_dir/provider/aws/.info
 # Function: delete all the prereqs created for the demo
 #####################################################
 terminate_prereqs() {
-  log "Deleting db subnet ${dbsubnet}..."
-  aws --region ${AWS_REGION:?} rds delete-db-subnet-group --db-subnet-group-name ${dbsubnet}
   log "Deleting security group ${sg}..."
   aws --region ${AWS_REGION:?} ec2 delete-security-group --group-id ${sg}
   log "Deleting subnet ${subnet_id}..."
@@ -125,7 +123,7 @@ terminate_prereqs() {
   fi
   log "Deleting key ${OWNER_TAG:?}-ingest-demo..."
   aws --region ${AWS_REGION:?} ec2 delete-key-pair --key-name ${OWNER_TAG:?}-ingest-demo
-  mv -f $starting_dir/provider/aws/${OWNER:?}-ingest-demo.pem $starting_dir/provider/aws/.${OWNER:?}-ingest-demo.pem.old.$(date +%s)
+  mv -f $starting_dir/provider/aws/${OWNER_TAG:?}-ingest-demo.pem $starting_dir/provider/aws/.${OWNER_TAG:?}-ingest-demo.pem.old.$(date +%s)
   mv -f $starting_dir/provider/aws/.info $starting_dir/provider/aws/.info.old.$(date +%s)
   touch $starting_dir/provider/aws/.info
 }
