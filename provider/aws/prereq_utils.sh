@@ -126,6 +126,7 @@ terminate_prereqs() {
   mv -f $starting_dir/provider/aws/${OWNER_TAG:?}-ingest-demo.pem $starting_dir/provider/aws/.${OWNER_TAG:?}-ingest-demo.pem.old.$(date +%s)
   mv -f $starting_dir/provider/aws/.info $starting_dir/provider/aws/.info.old.$(date +%s)
   touch $starting_dir/provider/aws/.info
+  cd $starting_dir
 }
 
 
