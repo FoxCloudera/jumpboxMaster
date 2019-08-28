@@ -2,7 +2,7 @@
 
 ## Notes:
 *  This has currently only been developed to run on AWS.
-*  This was build and testing running Docker Version: 19.03.1  
+*  This was built and tested on Docker Version: 19.03.1  
 
 ##  Docker Setup steps:
 ```
@@ -43,8 +43,10 @@ docker container stop centos_jumpbox
 # remove a docker container
 docker container rm centos_jumpbox
 
+```
 
 ### Pull git repo to build new instance
+
 ```
 docker pull centos
 docker run -it centos
