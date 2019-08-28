@@ -197,3 +197,38 @@ create_onenode_instance() {
 	aws --region ${AWS_REGION:?} ec2 create-tags --resources ${oneNodeInstanceId:?} --tags Key=owner,Value=${OWNER_TAG:?} Key=Name,Value=forkedOneNode Key=enddate,Value=permanent Key=project,Value='personal development'
 	echo "oneNodeInstanceId=${oneNodeInstanceId:?}" >> $starting_dir/provider/aws/.info
 }
+
+#####################################################
+# Function to check ec2 instance is ready
+#####################################################
+check_ec2(){
+  log "Checking EC2 Status"
+  sleep 60s
+  stage=`aws --output json --region ${AWS_REGION:?} ec2 describe-instance-status --instance-ids $1 | jq -r ".InstanceStatuses[0].InstanceStatus.Status"`
+
+  while [ "$stage" == 'initializing' ]
+  do
+    log "EC2 status: $stage"
+    log "sleeping for 20s"
+    sleep 20
+    stage=`aws --output json --region ${AWS_REGION:?} ec2 describe-instance-status --instance-ids $1 | jq -r ".InstanceStatuses[0].InstanceStatus.Status"`
+   
+  done
+  log "EC2 status: $stage"
+  if [ "$stage" != 'ok' ]
+  then
+    log "EC2 instance not in 'OK' status. Please check the EC2 console. Exiting..."
+    exit 1
+  fi
+  log "ec2 instance ready"
+
+  # we grab the director IP and FQDN from AWS
+  ONENODE_PUBLIC_IP=`aws --output json --region ${AWS_REGION:?} ec2 describe-instances --instance-ids $1 | jq -r ".Reservations[0].Instances[0].PublicIpAddress"`
+  ONENODE_PRIVATE_IP=`aws --output json --region ${AWS_REGION:?} ec2 describe-instances --instance-ids $1 | jq -r ".Reservations[0].Instances[0].PrivateIpAddress"`
+  ONENODE_FQDN_PRIVATE=`aws --output json --region ${AWS_REGION:?} ec2 describe-instances --instance-ids $1 | jq -r ".Reservations[0].Instances[0].PrivateDnsName"`
+  echo "ONENODE_PUBLIC_IP=${ONENODE_PUBLIC_IP:?}" >> $starting_dir/provider/aws/.info
+  echo "ONENODE_PRIVATE_IP=${ONENODE_PRIVATE_IP:?}" >> $starting_dir/provider/aws/.info
+  echo "ONENODE_FQDN_PRIVATE=${ONENODE_FQDN_PRIVATE:?}" >> $starting_dir/provider/aws/.info
+  log "oneNode publicIP: $ONENODE_PUBLIC_IP, privateIP: $ONENODE_PRIVATE_IP, privateFQDN: $ONENODE_FQDN_PRIVATE"
+
+}

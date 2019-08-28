@@ -45,4 +45,5 @@ fi
 #####################################################
 if [ $setup_onenode = true ]; then
   create_onenode_instance
+  check_ec2 ${oneNodeInstanceId:?}
 fi
