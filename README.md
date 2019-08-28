@@ -51,6 +51,10 @@ AMI_ID=<centos ami for your region>
 ##  Build your instance:
 
 ```
+export AWS_ACCESS_KEY_ID=<your key>
+export AWS_SECRET_ACCESS_KEY=<your secret key>
+export AWS_DEFAULT_REGION=<aws region you want to run in>
+
 cd /app/jumpboxMaster
 . bin/setup.sh aws
 ```
