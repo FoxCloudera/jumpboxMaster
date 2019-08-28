@@ -17,16 +17,11 @@ create_prereqs() {
   #####################################################
   # record main info for the cluster
   #####################################################
-#  echo "AWS_REGION=${AWS_REGION:?}" > .info
-#  echo "OWNER=${OWNER:?}" >> .info
-#  echo "PROJECT='${PROJECT:?}'" >> .info
-#  echo "CDH_VERSION=${CDH_VERSION:?}" >> .info
-
-# starting_dir
-echo "AWS_REGION=${AWS_REGION:?}" > $starting_dir/provider/aws/.info
-echo "OWNER_TAG=${OWNER_TAG:?}" >> $starting_dir/provider/aws/.info
-echo "starting_dir=${starting_dir:?}" >> $starting_dir/provider/aws/.info
-echo "CLOUD_PROVIDER=${CLOUD_PROVIDER:?}" >> $starting_dir/provider/aws/.info
+  # starting_dir
+  echo "AWS_REGION=${AWS_REGION:?}" > $starting_dir/provider/aws/.info
+  echo "OWNER_TAG=${OWNER_TAG:?}" >> $starting_dir/provider/aws/.info
+  echo "starting_dir=${starting_dir:?}" >> $starting_dir/provider/aws/.info
+  echo "CLOUD_PROVIDER=${CLOUD_PROVIDER:?}" >> $starting_dir/provider/aws/.info
   #####################################################
   # create VPC
   #####################################################
@@ -37,7 +32,7 @@ echo "CLOUD_PROVIDER=${CLOUD_PROVIDER:?}" >> $starting_dir/provider/aws/.info
       exit 1
     fi
     echo "existingVpc=false" >> $starting_dir/provider/aws/.info
-    aws --region ${AWS_REGION:?} ec2 create-tags --resources ${vpc_id:?} --tags Key=owner,Value=${OWNER_TAG:?} Key=Name,Value=${OWNER_TAG:?}-ingest-demo
+    aws --region ${AWS_REGION:?} ec2 create-tags --resources ${vpc_id:?} --tags Key=owner,Value=${OWNER_TAG:?} Key=Name,Value=${OWNER_TAG:?}-vpc
     log "New VPC in ${AWS_REGION:?} created: ${OWNER_TAG:?}-ingest-demo, ${vpc_id:?}"
   else
     vpc_id="${MY_VPC}"
@@ -52,8 +47,8 @@ echo "CLOUD_PROVIDER=${CLOUD_PROVIDER:?}" >> $starting_dir/provider/aws/.info
   #####################################################
   subnet_id=`aws --output json --region ${AWS_REGION:?} ec2 create-subnet --availability-zone ${AWS_REGION:?}a --vpc-id ${vpc_id:?} --cidr-block 10.0.8.0/24 | jq -r ".Subnet.SubnetId"`
   echo "subnet_id=${subnet_id:?}" >> $starting_dir/provider/aws/.info
-  log "New Subnet in ${AWS_REGION:?}a created: ${OWNER_TAG:?}-ingest-demo, ${subnet_id:?}"
-  aws --region ${AWS_REGION:?} ec2 create-tags --resources ${subnet_id:?} --tags Key=owner,Value=${OWNER_TAG:?} Key=Name,Value=${OWNER_TAG:?}-ingest-demo
+  log "New Subnet in ${AWS_REGION:?}a created: ${OWNER_TAG:?}-subnet, ${subnet_id:?}"
+  aws --region ${AWS_REGION:?} ec2 create-tags --resources ${subnet_id:?} --tags Key=owner,Value=${OWNER_TAG:?} Key=Name,Value=${OWNER_TAG:?}-subnet
  
   ##################################################### 
   # create/get internet gateway
@@ -62,7 +57,7 @@ echo "CLOUD_PROVIDER=${CLOUD_PROVIDER:?}" >> $starting_dir/provider/aws/.info
   if [ "$igw" == "null" ]; then
     igw=`aws --output json --region ${AWS_REGION:?} ec2 create-internet-gateway | jq -r ".InternetGateway.InternetGatewayId"`
     aws --region ${AWS_REGION:?} ec2 attach-internet-gateway --vpc-id ${vpc_id:?} --internet-gateway-id ${igw}
-    aws --region ${AWS_REGION:?} ec2 create-tags --resources ${igw:?} --tags Key=owner,Value=${OWNER_TAG:?} Key=Name,Value=${OWNER_TAG:?}-ingest-demo
+    aws --region ${AWS_REGION:?} ec2 create-tags --resources ${igw:?} --tags Key=owner,Value=${OWNER_TAG:?} Key=Name,Value=${OWNER_TAG:?}-internet-gw
   fi
   echo "igw=${igw:?}" >> $starting_dir/provider/aws/.info
   log "Internet gateway used: ${igw:?}"
@@ -73,15 +68,17 @@ echo "CLOUD_PROVIDER=${CLOUD_PROVIDER:?}" >> $starting_dir/provider/aws/.info
   rtb=`aws --output json --region ${AWS_REGION:?} ec2 create-route-table --vpc-id ${vpc_id:?} | jq -r ".RouteTable.RouteTableId"`
   aws --region ${AWS_REGION:?} ec2 create-route --route-table-id ${rtb:?} --destination-cidr-block 0.0.0.0/0 --gateway-id ${igw:?}
   aws --region ${AWS_REGION:?} ec2 associate-route-table  --subnet-id ${subnet_id:?} --route-table-id ${rtb:?}
-  aws --region ${AWS_REGION:?} ec2 create-tags --resources ${rtb:?} --tags Key=owner,Value=${OWNER_TAG:?} Key=Name,Value=${OWNER_TAG:?}-ingest-demo
+  aws --region ${AWS_REGION:?} ec2 create-tags --resources ${rtb:?} --tags Key=owner,Value=${OWNER_TAG:?} Key=Name,Value=${OWNER_TAG:?}-route-table
   echo "rtb=${rtb:?}" >> $starting_dir/provider/aws/.info
   log "Route table used: ${rtb:?}"
  
   ##################################################### 
-  # get PEM file
+  # create PEM file
   #####################################################
-  aws --region ${AWS_REGION:?} ec2 create-key-pair --key-name ${OWNER_TAG:?}-ingest-demo --query 'KeyMaterial' --output text > $starting_dir/provider/aws/${OWNER_TAG:?}-ingest-demo.pem
-  chmod 400  $starting_dir/provider/aws/${OWNER_TAG:?}-ingest-demo.pem
+  aws --region ${AWS_REGION:?} ec2 create-key-pair --key-name ${OWNER_TAG:?}-key-file --query 'KeyMaterial' --output text > $starting_dir/provider/aws/${OWNER_TAG:?}-key-file.pem
+  chmod 400  $starting_dir/provider/aws/${OWNER_TAG:?}-key-file.pem
+  echo "KEY_FILENAME=${OWNER_TAG:?}-key-file.pem" >> $starting_dir/provider/aws/.info
+  echo "KEY_FILE_PATH=$starting_dir/provider/aws/" >> $starting_dir/provider/aws/.info
 
   #####################################################
   # create Security Group
@@ -94,7 +91,7 @@ echo "CLOUD_PROVIDER=${CLOUD_PROVIDER:?}" >> $starting_dir/provider/aws/.info
   aws --region ${AWS_REGION:?} ec2 authorize-security-group-ingress --group-id ${sg:?} --protocol tcp --port 22 --cidr `curl -s ipinfo.io/ip`/32
   # added this to map to my home ip address and not the jumpbox server
   #aws --region ${AWS_REGION:?} ec2 authorize-security-group-ingress --group-id ${sg:?} --protocol all --port 0-65535 --cidr ${MY_HOME_IP:?}
-  aws --region ${AWS_REGION:?} ec2 create-tags --resources ${sg:?} --tags Key=owner,Value=${OWNER_TAG:?} Key=Name,Value=${OWNER_TAG:?}-ingest-demo
+  aws --region ${AWS_REGION:?} ec2 create-tags --resources ${sg:?} --tags Key=owner,Value=${OWNER_TAG:?} Key=Name,Value=${OWNER_TAG:?}-security-group
   echo "sg=${sg:?}" >> $starting_dir/provider/aws/.info
   log "New Security Group in ${AWS_REGION:?} created: ${OWNER_TAG:?}-ingest-demo-SG, ${sg:?}"
 
@@ -121,15 +118,33 @@ terminate_prereqs() {
   else
     log "Skipping existing internet gateway and VPC..."
   fi
-  log "Deleting key ${OWNER_TAG:?}-ingest-demo..."
-  aws --region ${AWS_REGION:?} ec2 delete-key-pair --key-name ${OWNER_TAG:?}-ingest-demo
-  mv -f $starting_dir/provider/aws/${OWNER_TAG:?}-ingest-demo.pem $starting_dir/provider/aws/.${OWNER_TAG:?}-ingest-demo.pem.old.$(date +%s)
+  log "Deleting key ${OWNER_TAG:?}-key-file..."
+  aws --region ${AWS_REGION:?} ec2 delete-key-pair --key-name ${OWNER_TAG:?}-key-file
+  mv -f $starting_dir/provider/aws/${OWNER_TAG:?}-key-file.pem $starting_dir/provider/aws/.${OWNER_TAG:?}-key-file.pem.old.$(date +%s)
   mv -f $starting_dir/provider/aws/.info $starting_dir/provider/aws/.info.old.$(date +%s)
   touch $starting_dir/provider/aws/.info
   cd $starting_dir
 }
 
-
+#####################################################
+# Function terminate ec2 instances
+#####################################################
+terminate_all_ec2() {
+  log "Terminating all ec2 instances"
+  while read -r line ; do l=$(echo $line | sed 's/.*\: \"\(.*\)\",/\1/'); arr+=($l); done <<(aws --output json --region ${AWS_REGION:?} ec2 describe-instances --filters "Name=tag:Name,Values=forkedOneNode" | grep InstanceId)
+  log "The following instances will be deleted:"
+  log ${arr[@]}
+  if [ ${#arr[@]} -eq 0 ]; then
+    log "No instances found. Skipping."
+  else
+    status=`aws --output json --region ${AWS_REGION:?} ec2 terminate-instances --instance-ids ${arr[@]} | jq -r ".TerminatingInstances[0].CurrentState.Name"`
+    log "Status: $status"
+    log 'Waiting for instances to terminate'
+    sleep 10s
+    aws --region ${AWS_REGION:?} ec2 wait instance-terminated --instance-ids ${arr[@]}
+    log "Instances terminated"
+  fi
+}
 
 
 
@@ -194,7 +209,7 @@ create_onenode_instance() {
 	log "Create oneNode ec2 instance"
 	oneNodeInstanceId=`aws --output json --region ${AWS_REGION:?} ec2 run-instances --image-id ${AMI_ID:?} --key-name ${OWNER_TAG:?}-ingest-demo --security-group-ids ${sg:?} --instance-type ${ONE_NODE_INSTANCE:?} --subnet-id ${subnet_id:?} --associate-public-ip-address --block-device-mappings 'DeviceName=/dev/sda1,Ebs={DeleteOnTermination=true,VolumeSize=100,VolumeType=gp2,Encrypted=false},DeviceName=/dev/sdc,Ebs={DeleteOnTermination=true,VolumeSize=100,VolumeType=gp2,Encrypted=false}' | jq -r ".Instances[0].InstanceId"`
 	log "Instance ID: ${oneNodeInstanceId:?}"
-	aws --region ${AWS_REGION:?} ec2 create-tags --resources ${oneNodeInstanceId:?} --tags Key=owner,Value=${OWNER_TAG:?} Key=Name,Value=forkedOneNode Key=enddate,Value=permanent Key=project,Value='personal development'
+	aws --region ${AWS_REGION:?} ec2 create-tags --resources ${oneNodeInstanceId:?} --tags Key=owner,Value=${OWNER_TAG:?} Key=Name,Value=forkedOneNode Key=enddate,Value=${ENDATE_TAG:?} Key=project,Value=${PROJECT_TAG:?}
 	echo "oneNodeInstanceId=${oneNodeInstanceId:?}" >> $starting_dir/provider/aws/.info
 }
 
