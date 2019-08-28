@@ -212,12 +212,12 @@ install_aws_cli() {
     		return
   	fi
   	if [ $machine = 'Linux' ]; then
-    		sudo yum -y install unzip
+    		yum -y install unzip
   	fi  
-  		sudo curl -s -O "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip"
-  		sudo unzip awscli-bundle.zip
-  		sudo ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws 
-  		sudo rm -rf awscli-bundle*
+  		curl -s -O "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip"
+  		unzip awscli-bundle.zip
+  		./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws 
+  		rm -rf awscli-bundle*
   	log "Done installing AWS CLI"
 
 }
