@@ -20,7 +20,7 @@ docker volume ls
  docker run -it \
   --name centos_jumpbox \
   --mount source=jumpbox-vol1,target=/app \
-  centos
+  centos bash
   
 ```
 
