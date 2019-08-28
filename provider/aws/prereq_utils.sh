@@ -91,7 +91,7 @@ echo "CLOUD_PROVIDER=${CLOUD_PROVIDER:?}" >> $starting_dir/provider/aws/.info
   #  need to add a port 22 access here...
   #  this next one might need to be removed...  its sets the ip allowed to the public ip address of the host running this code.  (jumpbox).
   # orig version 
-  aws --region ${AWS_REGION:?} ec2 authorize-security-group-ingress --group-id ${sg:?} --protocol ssh --port 22 --cidr `curl -s ipinfo.io/ip`/32
+  aws --region ${AWS_REGION:?} ec2 authorize-security-group-ingress --group-id ${sg:?} --protocol tcp --port 22 --cidr `curl -s ipinfo.io/ip`/32
   # added this to map to my home ip address and not the jumpbox server
   #aws --region ${AWS_REGION:?} ec2 authorize-security-group-ingress --group-id ${sg:?} --protocol all --port 0-65535 --cidr ${MY_HOME_IP:?}
   aws --region ${AWS_REGION:?} ec2 create-tags --resources ${sg:?} --tags Key=owner,Value=${OWNER_TAG:?} Key=Name,Value=${OWNER_TAG:?}-ingest-demo
@@ -192,8 +192,8 @@ install_aws_cli() {
 #####################################################
 create_onenode_instance() {
 	log "Create oneNode ec2 instance"
-	oneNodeInstanceId=`aws --output json --region ${AWS_REGION:?} ec2 run-instances --image-id ${AMI_ID:?} --key-name ${OWNER_TAG:?}-ingest-demo --security-group-ids ${sg:?} --instance-type ${ONE_NODE_INSTANCE:?} --subnet-id ${subnet_id:?} --associate-public-ip-address | jq -r ".Instances[0].InstanceId"`
+	oneNodeInstanceId=`aws --output json --region ${AWS_REGION:?} ec2 run-instances --image-id ${AMI_ID:?} --key-name ${OWNER_TAG:?}-ingest-demo --security-group-ids ${sg:?} --instance-type ${ONE_NODE_INSTANCE:?} --subnet-id ${subnet_id:?} --associate-public-ip-address --block-device-mappings 'DeviceName=/dev/sda1,Ebs={DeleteOnTermination=true,VolumeSize=100,VolumeType=gp2,Encrypted=false},DeviceName=/dev/sdc,Ebs={DeleteOnTermination=true,VolumeSize=100,VolumeType=gp2,Encrypted=false}' | jq -r ".Instances[0].InstanceId"`
 	log "Instance ID: ${oneNodeInstanceId:?}"
-	aws --region ${AWS_REGION:?} ec2 create-tags --resources ${oneNodeInstanceId:?} --tags Key=owner,Value=${OWNER_TAG:?} Key=Name,Value=ingest-director-${OWNER_TAG:?} Key=ingest-demo,Value=${OWNER_TAG:?} Key=project,Value=${PROJECT_TAG:?}
-	echo "oneNodeInstanceId=${oneNodeInstanceId:?}" >> ./.info
+	aws --region ${AWS_REGION:?} ec2 create-tags --resources ${oneNodeInstanceId:?} --tags Key=owner,Value=${OWNER_TAG:?} Key=Name,Value=forkedOneNode Key=enddate,Value=permanent Key=project,Value='personal development'
+	echo "oneNodeInstanceId=${oneNodeInstanceId:?}" >> $starting_dir/provider/aws/.info
 }

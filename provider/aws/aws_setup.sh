@@ -40,3 +40,9 @@ if [ $setup_prereqs = true ]; then
   create_prereqs
 fi
 
+#####################################################
+#       Step 3: create ec2 instance 
+#####################################################
+if [ $setup_onenode = true ]; then
+  create_onenode_instance
+fi
