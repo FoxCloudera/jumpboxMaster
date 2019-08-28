@@ -18,6 +18,9 @@ log() {
     echo "[$(date)]: $*" >> terminate.log
 }
 
+#delete the instance(s)
+terminate_all_ec2 
+
 # delete all the prereqs by calling the function
 terminate_prereqs
 

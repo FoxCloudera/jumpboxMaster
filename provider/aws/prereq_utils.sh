@@ -33,7 +33,7 @@ create_prereqs() {
     fi
     echo "existingVpc=false" >> $starting_dir/provider/aws/.info
     aws --region ${AWS_REGION:?} ec2 create-tags --resources ${vpc_id:?} --tags Key=owner,Value=${OWNER_TAG:?} Key=Name,Value=${OWNER_TAG:?}-vpc
-    log "New VPC in ${AWS_REGION:?} created: ${OWNER_TAG:?}-ingest-demo, ${vpc_id:?}"
+    log "New VPC in ${AWS_REGION:?} created: ${OWNER_TAG:?}-vpc, ${vpc_id:?}"
   else
     vpc_id="${MY_VPC}"
     echo "existingVpc=true" >> $starting_dir/provider/aws/.info
@@ -83,7 +83,7 @@ create_prereqs() {
   #####################################################
   # create Security Group
   #####################################################
-  sg=`aws --output json --region ${AWS_REGION:?} ec2 create-security-group --group-name ${OWNER_TAG:?}-ingest-demo-SG --description "Security group for Ingest Demo" --vpc-id ${vpc_id:?} | jq -r ".GroupId"`
+  sg=`aws --output json --region ${AWS_REGION:?} ec2 create-security-group --group-name ${OWNER_TAG:?}-security-group --description "Security group" --vpc-id ${vpc_id:?} | jq -r ".GroupId"`
   aws --region ${AWS_REGION:?} ec2 authorize-security-group-ingress --group-id ${sg:?} --protocol all --port 0-65535 --source-group ${sg:?}
   #  need to add a port 22 access here...
   #  this next one might need to be removed...  its sets the ip allowed to the public ip address of the host running this code.  (jumpbox).
@@ -93,7 +93,7 @@ create_prereqs() {
   #aws --region ${AWS_REGION:?} ec2 authorize-security-group-ingress --group-id ${sg:?} --protocol all --port 0-65535 --cidr ${MY_HOME_IP:?}
   aws --region ${AWS_REGION:?} ec2 create-tags --resources ${sg:?} --tags Key=owner,Value=${OWNER_TAG:?} Key=Name,Value=${OWNER_TAG:?}-security-group
   echo "sg=${sg:?}" >> $starting_dir/provider/aws/.info
-  log "New Security Group in ${AWS_REGION:?} created: ${OWNER_TAG:?}-ingest-demo-SG, ${sg:?}"
+  log "New Security Group in ${AWS_REGION:?} created: ${OWNER_TAG:?}-security-group, ${sg:?}"
 
   
 }
@@ -131,17 +131,16 @@ terminate_prereqs() {
 #####################################################
 terminate_all_ec2() {
   log "Terminating all ec2 instances"
-  while read -r line ; do l=$(echo $line | sed 's/.*\: \"\(.*\)\",/\1/'); arr+=($l); done <<(aws --output json --region ${AWS_REGION:?} ec2 describe-instances --filters "Name=tag:Name,Values=forkedOneNode" | grep InstanceId)
-  log "The following instances will be deleted:"
-  log ${arr[@]}
-  if [ ${#arr[@]} -eq 0 ]; then
+  terminate_id=`aws --output json --region ${AWS_REGION:?} ec2 describe-instances --filters "Name=tag:Name,Values=forkedOneNode-${OWNER_TAG:?}" | jq -r ".Reservations[].Instances[].InstanceId"`
+  log "The following instances will be deleted:" $terminate_id
+  if [ -z $terminate_id ]; then
     log "No instances found. Skipping."
   else
-    status=`aws --output json --region ${AWS_REGION:?} ec2 terminate-instances --instance-ids ${arr[@]} | jq -r ".TerminatingInstances[0].CurrentState.Name"`
+    status=`aws --output json --region ${AWS_REGION:?} ec2 terminate-instances --instance-ids $terminate_id | jq -r ".TerminatingInstances[0].CurrentState.Name"`
     log "Status: $status"
     log 'Waiting for instances to terminate'
     sleep 10s
-    aws --region ${AWS_REGION:?} ec2 wait instance-terminated --instance-ids ${arr[@]}
+    aws --region ${AWS_REGION:?} ec2 wait instance-terminated --instance-ids $terminate_id
     log "Instances terminated"
   fi
 }
@@ -207,9 +206,9 @@ install_aws_cli() {
 #####################################################
 create_onenode_instance() {
 	log "Create oneNode ec2 instance"
-	oneNodeInstanceId=`aws --output json --region ${AWS_REGION:?} ec2 run-instances --image-id ${AMI_ID:?} --key-name ${OWNER_TAG:?}-ingest-demo --security-group-ids ${sg:?} --instance-type ${ONE_NODE_INSTANCE:?} --subnet-id ${subnet_id:?} --associate-public-ip-address --block-device-mappings 'DeviceName=/dev/sda1,Ebs={DeleteOnTermination=true,VolumeSize=100,VolumeType=gp2,Encrypted=false},DeviceName=/dev/sdc,Ebs={DeleteOnTermination=true,VolumeSize=100,VolumeType=gp2,Encrypted=false}' | jq -r ".Instances[0].InstanceId"`
+	oneNodeInstanceId=`aws --output json --region ${AWS_REGION:?} ec2 run-instances --image-id ${AMI_ID:?} --key-name ${OWNER_TAG:?}-key-file --security-group-ids ${sg:?} --instance-type ${ONE_NODE_INSTANCE:?} --subnet-id ${subnet_id:?} --associate-public-ip-address --block-device-mappings 'DeviceName=/dev/sda1,Ebs={DeleteOnTermination=true,VolumeSize=100,VolumeType=gp2,Encrypted=false},DeviceName=/dev/sdc,Ebs={DeleteOnTermination=true,VolumeSize=100,VolumeType=gp2,Encrypted=false}' | jq -r ".Instances[0].InstanceId"`
 	log "Instance ID: ${oneNodeInstanceId:?}"
-	aws --region ${AWS_REGION:?} ec2 create-tags --resources ${oneNodeInstanceId:?} --tags Key=owner,Value=${OWNER_TAG:?} Key=Name,Value=forkedOneNode Key=enddate,Value=${ENDATE_TAG:?} Key=project,Value=${PROJECT_TAG:?}
+	aws --region ${AWS_REGION:?} ec2 create-tags --resources ${oneNodeInstanceId:?} --tags Key=owner,Value=${OWNER_TAG:?} Key=Name,Value=forkedOneNode-${OWNER_TAG:?} Key=enddate,Value=${ENDATE_TAG:?} Key=project,Value='personal development'
 	echo "oneNodeInstanceId=${oneNodeInstanceId:?}" >> $starting_dir/provider/aws/.info
 }
 
