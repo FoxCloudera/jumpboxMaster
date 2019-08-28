@@ -22,11 +22,52 @@ docker volume ls
   --mount source=jumpbox-vol1,target=/app \
   centos
   
+```
+
+### Pull git repo to build new instance
+
+```
+#install git
+yum install -y git
+cd /app
+git clone https://github.com/tlepple/jumpboxMaster.git
+cd /app/jumpboxMaster
 
 
-  
+```
+
+##  Update `demo.properties` with your info.
+
+```
+vi ./provider/aws/demo.properties
+
+OWNER_TAG=<your userid here>
+AWS_RGION=<your region here>
+
+# I will fix this soon
+AMI_ID=<centos ami for your region>
+```
+
+##  Build your instance:
+
+```
+cd /app/jumpboxMaster
+. bin/setup.sh aws
+```
+
+##  Terminate all aws items: 
+* VPC, Security Groups, Route Tables, Subnet, Internet Gateway, PEM File and EC2 Instance.
+
+```
+cd /app/jumpboxMaster
+. provider/aws/terminate.sh
+```
+
+##  Useful docker command reference:
+
+```
 # list all containers on host
-docker ps -a  
+docker ps -a
 
 #  start an existing container
 docker start centos_jumpbox
@@ -43,48 +84,4 @@ docker container stop centos_jumpbox
 # remove a docker container
 docker container rm centos_jumpbox
 
-```
-
-### Pull git repo to build new instance
-
-```
-docker pull centos
-docker run -it centos
-
-#install git
-yum install -y git
-cd /app
-git clone https://github.com/tlepple/jumpboxMaster.git
-cd /app/jumpboxMaster
-
-
-```
-
-#  Update the following properties in file `demo.properties` with your info.
-
-```
-vi ./provider/aws/demo.properties
-
-OWNER_TAG=<your userid here>
-AWS_RGION=<your region here>
-
-# I will fix this soon
-AMI_ID=<centos ami for your region>
-```
-
-##  Build your instance:
-
-```
-
-
-```
-cd /app/jumpboxMaster
-. bin/setup.sh aws
-```
-
-##  Terminate all aws items: VPC, Security Groups, Route Tables, Subnet, Internet Gateway, PEM File and EC2 Instance.
-
-```
-cd /app/jumpboxMaster
-. provider/aws/terminate.sh
 ```
