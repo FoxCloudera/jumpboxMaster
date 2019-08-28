@@ -47,3 +47,8 @@ if [ $setup_onenode = true ]; then
   create_onenode_instance
   check_ec2 ${oneNodeInstanceId:?}
 fi
+
+#####################################################
+#       Step 4: Generate connection strings
+#####################################################
+. $starting_dir/provider/aws/echo_conn_strings.sh
