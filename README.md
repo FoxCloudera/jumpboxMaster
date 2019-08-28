@@ -88,4 +88,10 @@ docker container stop centos_jumpbox
 # remove a docker container
 docker container rm centos_jumpbox
 
+# list docker volumes
+docker volume ls
+
+# remove a docker volume
+docker volume rm jumpbox-vol1
+
 ```
