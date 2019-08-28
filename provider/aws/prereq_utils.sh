@@ -136,12 +136,14 @@ terminate_all_ec2() {
   if [ -z $terminate_id ]; then
     log "No instances found. Skipping."
   else
-    status=`aws --output json --region ${AWS_REGION:?} ec2 terminate-instances --instance-ids $terminate_id | jq -r ".TerminatingInstances[0].CurrentState.Name"`
-    log "Status: $status"
-    log 'Waiting for instances to terminate'
-    sleep 10s
-    aws --region ${AWS_REGION:?} ec2 wait instance-terminated --instance-ids $terminate_id
-    log "Instances terminated"
+    for i in $terminate_id; do
+        status=`aws --output json --region ${AWS_REGION:?} ec2 terminate-instances --instance-ids $i | jq -r ".TerminatingInstances[0].CurrentState.Name"`
+        log "Status: $status"
+        log 'Waiting for instances to terminate'
+        sleep 10s
+        aws --region ${AWS_REGION:?} ec2 wait instance-terminated --instance-ids $i
+        log "Instance $i terminated"
+    done
   fi
 }
 
