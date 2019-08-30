@@ -1,6 +1,6 @@
 # jumpboxMaster
 
-#  This goal of this repo is to setup cloud security components and build out instances.
+#  The goal of this repo is to setup cloud security components and build out instances.
 
 ## Notes:
 *  Currently only works on AWS.   More to come soon...
