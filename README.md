@@ -1,8 +1,11 @@
 # jumpboxMaster
 
+#  This goal of this repo is to setup cloud security components and build out instances.
+
 ## Notes:
-*  This has currently only been developed to run on AWS.
-*  This was built and tested on Docker Version: 19.03.1  
+*  Currently only works on AWS.   More to come soon...
+*  This was built and tested on Docker Version: 19.03.1
+
 
 ##  Docker Setup steps:
 ```
