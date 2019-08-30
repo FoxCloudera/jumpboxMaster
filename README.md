@@ -5,6 +5,7 @@
 ## Notes:
 *  Currently only works on AWS.   More to come soon...
 *  This was built and tested on Docker Version: 19.03.1
+*  This assumes you already have Docker installed
 
 
 ##  Docker Setup steps:
