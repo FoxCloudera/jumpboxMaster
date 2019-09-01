@@ -99,3 +99,15 @@ docker volume ls
 docker volume rm jumpbox-vol1
 
 ```
+
+# Start a stopped Cloud Instance:
+```
+cd /app/jumpboxMaster
+. bin/start_instance.sh
+```
+
+# Stop a running Cloud Instance:
+```
+cd /app/jumpboxMaster
+. bin/stop_instance.sh
+```
