@@ -258,12 +258,12 @@ check_ec2(){
   log "ec2 instance ready"
 
   # we grab the director IP and FQDN from AWS
-  ONENODE_PUBLIC_IP=`aws --output json --region ${AWS_REGION:?} ec2 describe-instances --instance-ids $1 | jq -r ".Reservations[0].Instances[0].PublicIpAddress"`
+#  ONENODE_PUBLIC_IP=`aws --output json --region ${AWS_REGION:?} ec2 describe-instances --instance-ids $1 | jq -r ".Reservations[0].Instances[0].PublicIpAddress"`
   ONENODE_PRIVATE_IP=`aws --output json --region ${AWS_REGION:?} ec2 describe-instances --instance-ids $1 | jq -r ".Reservations[0].Instances[0].PrivateIpAddress"`
   ONENODE_FQDN_PRIVATE=`aws --output json --region ${AWS_REGION:?} ec2 describe-instances --instance-ids $1 | jq -r ".Reservations[0].Instances[0].PrivateDnsName"`
-  echo "ONENODE_PUBLIC_IP=${ONENODE_PUBLIC_IP:?}" >> $starting_dir/provider/aws/.info
+#  echo "ONENODE_PUBLIC_IP=${ONENODE_PUBLIC_IP:?}" >> $starting_dir/provider/aws/.info
   echo "ONENODE_PRIVATE_IP=${ONENODE_PRIVATE_IP:?}" >> $starting_dir/provider/aws/.info
   echo "ONENODE_FQDN_PRIVATE=${ONENODE_FQDN_PRIVATE:?}" >> $starting_dir/provider/aws/.info
-  log "oneNode publicIP: $ONENODE_PUBLIC_IP, privateIP: $ONENODE_PRIVATE_IP, privateFQDN: $ONENODE_FQDN_PRIVATE"
+  log "oneNode privateIP: $ONENODE_PRIVATE_IP, privateFQDN: $ONENODE_FQDN_PRIVATE"
 
 }
