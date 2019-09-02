@@ -147,6 +147,17 @@ terminate_all_ec2() {
   fi
 }
 
+#####################################################
+# Function to archive .info (needed for terminate of ec2)
+#####################################################
+
+archive_info_file () {
+    mv -f ${starting_dir}/provider/aws/${KEY_FILENAME:?}.pem ${starting_dir}/provider/aws/.${KEY_FILENAME:?}.pem.old.$(date +%s)
+    mv -f ${starting_dir}/provider/aws/.info ${starting_dir}/provider/aws/.info.old.$(date +%s)
+    touch ${starting_dir}/provider/aws/.info
+    cd ${starting_dir}
+}
+
 
 
 
