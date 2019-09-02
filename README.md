@@ -28,7 +28,7 @@ docker volume ls
   
 ```
 
-### Pull git repo to build new instance
+### Pull git repo into this new container to build a new cloud instance
 
 ```
 #install git
