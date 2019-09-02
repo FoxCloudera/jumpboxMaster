@@ -72,10 +72,24 @@ cd /app/jumpboxMaster
 
 ```
 cd /app/jumpboxMaster
-. provider/aws/terminate.sh
+. provider/aws/terminate_everything.sh
+
 ```
 
+## Terminate just the ec2 instance:
+
+```
+cd /app/jumpboxMaster
+. provider/aws/terminate_ec2.sh
+
+```
+
+---
+---
 ##  Useful docker command reference:
+---
+---
+
 
 ```
 # list all containers on host
