@@ -50,6 +50,10 @@ AWS_RGION=<your region here>
 
 # I will fix this soon
 AMI_ID=<centos ami for your region>
+
+#If you already have a security group and subnet ID set:
+
+setup_prereqs=false and update the values of security group and subnet ID to your from your VPC.
 ```
 
 ##  Build your instance:
