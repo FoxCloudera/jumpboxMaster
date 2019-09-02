@@ -77,7 +77,7 @@ create_prereqs() {
   #####################################################
   aws --region ${AWS_REGION:?} ec2 create-key-pair --key-name ${OWNER_TAG:?}-key-file --query 'KeyMaterial' --output text > $starting_dir/provider/aws/${OWNER_TAG:?}-key-file.pem
   chmod 400  $starting_dir/provider/aws/${OWNER_TAG:?}-key-file.pem
-  echo "KEY_FILENAME=${OWNER_TAG:?}-key-file.pem" >> $starting_dir/provider/aws/.info
+  echo "KEY_FILENAME=${OWNER_TAG:?}-key-file" >> $starting_dir/provider/aws/.info
   echo "KEY_FILE_PATH=$starting_dir/provider/aws/" >> $starting_dir/provider/aws/.info
 
   #####################################################
@@ -119,8 +119,8 @@ terminate_prereqs() {
     log "Skipping existing internet gateway and VPC..."
   fi
   log "Deleting key ${OWNER_TAG:?}-key-file..."
-  aws --region ${AWS_REGION:?} ec2 delete-key-pair --key-name ${OWNER_TAG:?}-key-file
-  mv -f $starting_dir/provider/aws/${OWNER_TAG:?}-key-file.pem $starting_dir/provider/aws/.${OWNER_TAG:?}-key-file.pem.old.$(date +%s)
+  aws --region ${AWS_REGION:?} ec2 delete-key-pair --key-name ${KEY_FILENAME:?}
+  mv -f $starting_dir/provider/aws/${KEY_FILENAME:?}.pem $starting_dir/provider/aws/.${KEY_FILENAME:?}.pem.old.$(date +%s)
   mv -f $starting_dir/provider/aws/.info $starting_dir/provider/aws/.info.old.$(date +%s)
   touch $starting_dir/provider/aws/.info
   cd $starting_dir
@@ -227,7 +227,7 @@ install_aws_cli() {
 #####################################################
 create_onenode_instance() {
 	log "Create oneNode ec2 instance"
-	oneNodeInstanceId=`aws --output json --region ${AWS_REGION:?} ec2 run-instances --image-id ${AMI_ID:?} --key-name ${OWNER_TAG:?}-key-file --security-group-ids ${sg:?} --instance-type ${ONE_NODE_INSTANCE:?} --subnet-id ${subnet_id:?} --associate-public-ip-address --block-device-mappings '[{"DeviceName":"/dev/sda1","Ebs":{"DeleteOnTermination":true,"VolumeSize":100,"VolumeType":"gp2","Encrypted":false}},{"DeviceName":"/dev/sdc","Ebs":{"DeleteOnTermination":true,"VolumeSize":100,"VolumeType":"gp2","Encrypted":false}}]' | jq -r ".Instances[0].InstanceId"`
+	oneNodeInstanceId=`aws --output json --region ${AWS_REGION:?} ec2 run-instances --image-id ${AMI_ID:?} --key-name ${KEY_FILENAME:?} --security-group-ids ${sg:?} --instance-type ${ONE_NODE_INSTANCE:?} --subnet-id ${subnet_id:?} --associate-public-ip-address --block-device-mappings '[{"DeviceName":"/dev/sda1","Ebs":{"DeleteOnTermination":true,"VolumeSize":100,"VolumeType":"gp2","Encrypted":false}},{"DeviceName":"/dev/sdc","Ebs":{"DeleteOnTermination":true,"VolumeSize":100,"VolumeType":"gp2","Encrypted":false}}]' | jq -r ".Instances[0].InstanceId"`
 	log "Instance ID: ${oneNodeInstanceId:?}"
 	aws --region ${AWS_REGION:?} ec2 create-tags --resources ${oneNodeInstanceId:?} --tags Key=owner,Value=${OWNER_TAG:?} Key=Name,Value=forkedOneNode-${OWNER_TAG:?} Key=enddate,Value=${ENDATE_TAG:?} Key=project,Value='personal development'
 	echo "oneNodeInstanceId=${oneNodeInstanceId:?}" >> $starting_dir/provider/aws/.info
