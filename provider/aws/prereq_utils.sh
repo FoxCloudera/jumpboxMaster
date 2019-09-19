@@ -279,3 +279,14 @@ check_ec2(){
   log "oneNode privateIP: $ONENODE_PRIVATE_IP, privateFQDN: $ONENODE_FQDN_PRIVATE"
 
 }
+
+#####################################################
+# Function to copy key file to a bind mount
+#####################################################
+replicate_key() {
+
+    # build a unique filename for this pem key
+	BIND_FILENAME=${OWNER_TAG}-${AWS_REGION}-${oneNodeInstanceId}-${ONENODE_PRIVATE_IP}.pem
+        echo "BIND_FILENAME=${BIND_FILENAME:?}" >> $starting_dir/provider/aws/.info
+	cp ${KEY_FILE_PATH}${KEY_FILENAME} ${BIND_MNT_TARGET}/${BIND_FILENAME}
+}
