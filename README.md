@@ -105,25 +105,25 @@ cd /app/jumpboxMaster
 docker ps -a
 
 #  start an existing container
-docker start centos_jumpbox
+docker start centos_bind_jumpbox
 
 # connect to command line of this container
-docker exec -it centos_jumpbox bash
+docker exec -it centos_bind_jumpbox bash
 
 #list running container
 docker container ls -all
 
 # stop a running container
-docker container stop centos_jumpbox
+docker container stop centos_bind_jumpbox
 
 # remove a docker container
-docker container rm centos_jumpbox
+docker container rm centos_bind_jumpbox
 
 # list docker volumes
 docker volume ls
 
 # remove a docker volume
-docker volume rm jumpbox-vol1
+docker volume rm dual-mnt-vol1
 
 ```
 
