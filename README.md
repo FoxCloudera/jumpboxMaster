@@ -11,19 +11,24 @@
 ##  Docker Setup steps:
 ```
 # Create a docker volume to persist data
-docker volume create jumpbox-vol1
+docker volume create dual-mnt-vol1
 
 # inspect volume
-docker volume inspect jumpbox-vol1
+docker volume inspect dual-mnt-vol1
 
 # list volumes
 docker volume ls
 
+# create a directory in OS for bind mount:
+cd ~
+mkdir -p ./Documents/aws_scripts/docker_bind_mnt
+
 # run a new docker container with this volume from centos image
 
  docker run -it \
-  --name centos_jumpbox \
-  --mount source=jumpbox-vol1,target=/app \
+  --name centos_bind_jumpbox \
+  --mount source=dual-mnt-vol1,target=/app \
+  --mount type=bind,source=/Users/madmin/Documents/aws_scripts/docker_bind_mnt,target=/macmnt \
   centos bash
   
 ```
@@ -48,12 +53,16 @@ vi ./provider/aws/demo.properties
 OWNER_TAG=<your userid here>
 AWS_RGION=<your region here>
 
+# set the docker bind mount properties
+BIND_MNT_SOURCE="/Users/<your username here>/Documents/aws_scripts/docker_bind_mnt"
+BIND_MNT_TARGET="/macmnt"
+
 # I will fix this soon
 AMI_ID=<centos ami for your region>
 
 #If you already have a security group and subnet ID set:
 
-setup_prereqs=false and update the values of security group and subnet ID to your from your VPC.
+setup_prereqs=false and update the values of security group and subnet ID to yours from your VPC.
 ```
 
 ##  Build your instance:
