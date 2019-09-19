@@ -49,6 +49,13 @@ if [ $setup_onenode = true ]; then
 fi
 
 #####################################################
-#       Step 4: Generate connection strings
+#       Step 4: copy pem file to bind mount
+#####################################################
+if [ $setup_prereqs = true ]; then
+  replicate_key
+fi
+
+#####################################################
+#       Step 5: Generate connection strings
 #####################################################
 . $starting_dir/provider/aws/echo_conn_strings.sh
