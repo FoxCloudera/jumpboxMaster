@@ -288,5 +288,5 @@ replicate_key() {
     # build a unique filename for this pem key
 	BIND_FILENAME=${OWNER_TAG}-${AWS_REGION}-${oneNodeInstanceId}-${ONENODE_PRIVATE_IP}.pem
         echo "BIND_FILENAME=${BIND_FILENAME:?}" >> $starting_dir/provider/aws/.info
-	cp ${KEY_FILE_PATH}${KEY_FILENAME} ${BIND_MNT_TARGET}/${BIND_FILENAME}
+	cp ${KEY_FILE_PATH}${KEY_FILENAME}.pem ${BIND_MNT_TARGET}/${BIND_FILENAME}
 }
