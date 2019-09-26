@@ -78,8 +78,9 @@ create_prereqs() {
   aws --region ${AWS_REGION:?} ec2 create-key-pair --key-name ${OWNER_TAG:?}-key-file --query 'KeyMaterial' --output text > $starting_dir/provider/aws/${OWNER_TAG:?}-key-file.pem
   chmod 400  $starting_dir/provider/aws/${OWNER_TAG:?}-key-file.pem
   echo "KEY_FILENAME=${OWNER_TAG:?}-key-file" >> $starting_dir/provider/aws/.info
-  echo "KEY_FILE_PATH=$starting_dir/provider/aws/" >> $starting_dir/provider/aws/.info
+  echo "KEY_FILE_PATH=${starting_dir}/provider/aws/" >> $starting_dir/provider/aws/.info
   export KEY_FILENAME=${OWNER_TAG:?}-key-file
+  export KEY_FILE_PATH=${starting_dir}/provider/aws/
 
   #####################################################
   # create Security Group
