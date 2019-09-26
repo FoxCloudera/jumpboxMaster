@@ -23,6 +23,9 @@ docker volume ls
 cd ~
 mkdir -p ./Documents/aws_scripts/docker_bind_mnt
 
+# create a softlink to this directory
+sudo ln -s /Users/madmin/Documents/aws_scripts/docker_bind_mnt /macmnt
+
 # run a new docker container with this volume from centos image
 
  docker run -it \
