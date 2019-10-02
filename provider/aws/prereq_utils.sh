@@ -67,7 +67,7 @@ create_prereqs() {
   # create elastic IP
   #####################################################  
 
-  eip_id=`aws --region ${AWS_REGION:?} ec2 allocate-address --domain vpc` | jq -r ".AllocationId"
+  eip_id=`aws --region ${AWS_REGION:?} ec2 allocate-address --domain vpc | jq -r ".AllocationId"`
   echo "eip_id=${eip_id:?}" >> $starting_dir/provider/aws/.info
   aws --region ${AWS_REGION:?} ec2 create-tags --resources ${eip_id:?} --tags Key=owner,Value=${OWNER_TAG:?} Key=Name,Value=${OWNER_TAG:?}-eip
  
