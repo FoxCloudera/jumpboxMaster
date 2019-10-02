@@ -70,6 +70,8 @@ create_prereqs() {
   eip_id=`aws --region ${AWS_REGION:?} ec2 allocate-address --domain vpc | jq -r ".AllocationId"`
   echo "eip_id=${eip_id:?}" >> $starting_dir/provider/aws/.info
   aws --region ${AWS_REGION:?} ec2 create-tags --resources ${eip_id:?} --tags Key=owner,Value=${OWNER_TAG:?} Key=Name,Value=${OWNER_TAG:?}-eip
+  eip_public_ip=`aws ec2 describe-addresses --allocation-ids ${eip_id:?} | jq -r ".Addresses[0].PublicIp"`
+  echo "eip_public_ip=${eip_public_ip:?} >> $starting_dir/provider/aws/.info
  
   ##################################################### 
   # create route table
@@ -94,14 +96,20 @@ create_prereqs() {
   #####################################################
   # create Security Group
   #####################################################
+  #####################################################
+  # create Security Group
+  #####################################################
   sg=`aws --output json --region ${AWS_REGION:?} ec2 create-security-group --group-name ${OWNER_TAG:?}-security-group --description "Security group" --vpc-id ${vpc_id:?} | jq -r ".GroupId"`
   aws --region ${AWS_REGION:?} ec2 authorize-security-group-ingress --group-id ${sg:?} --protocol all --port 0-65535 --source-group ${sg:?}
   #  need to add a port 22 access here...
   #  this next one might need to be removed...  its sets the ip allowed to the public ip address of the host running this code.  (jumpbox).
-  # orig version 
-  aws --region ${AWS_REGION:?} ec2 authorize-security-group-ingress --group-id ${sg:?} --protocol tcp --port 22 --cidr `curl -s ipinfo.io/ip`/32
+  # orig version
+  aws --region ${AWS_REGION:?} ec2 authorize-security-group-ingress --group-id ${sg:?} --protocol tcp --port 0-65535 --cidr `curl -s ipinfo.io/ip`/32
   # added this to map to my home ip address and not the jumpbox server
   #aws --region ${AWS_REGION:?} ec2 authorize-security-group-ingress --group-id ${sg:?} --protocol all --port 0-65535 --cidr ${MY_HOME_IP:?}
+  # add the elastic ip address public IP
+  aws --region ${AWS_REGION:?} ec2 authorize-security-group-ingress --group-id ${sg:?} --protocol tcp --port 0-65535 --cidr ${eip_public_ip:?}
+  
   aws --region ${AWS_REGION:?} ec2 create-tags --resources ${sg:?} --tags Key=owner,Value=${OWNER_TAG:?} Key=Name,Value=${OWNER_TAG:?}-security-group
   echo "sg=${sg:?}" >> $starting_dir/provider/aws/.info
   log "New Security Group in ${AWS_REGION:?} created: ${OWNER_TAG:?}-security-group, ${sg:?}"
