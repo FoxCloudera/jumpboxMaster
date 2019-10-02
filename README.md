@@ -10,8 +10,8 @@
 
 ##  Docker Setup steps:
 
-# Pull docker image centos 7
 ```
+# Pull docker image centos 7
 docker pull centos:7
 
 # Create a docker volume to persist data
