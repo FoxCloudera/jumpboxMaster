@@ -1,4 +1,4 @@
-# jumpboxMaster
+#jumpboxMaster
 
 #  The goal of this repo is to setup cloud security components and build out instances.
 
@@ -32,7 +32,7 @@ sudo ln -s /Users/madmin/Documents/aws_scripts/docker_bind_mnt /macmnt
   --name centos_bind_jumpbox \
   --mount source=dual-mnt-vol1,target=/app \
   --mount type=bind,source=/Users/madmin/Documents/aws_scripts/docker_bind_mnt,target=/macmnt \
-  centos bash
+  centos:7 bash
   
 ```
 
