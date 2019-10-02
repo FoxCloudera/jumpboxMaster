@@ -131,6 +131,8 @@ terminate_prereqs() {
   fi
   log "Deleting key ${OWNER_TAG:?}-key-file..."
   aws --region ${AWS_REGION:?} ec2 delete-key-pair --key-name ${KEY_FILENAME:?}
+  log "Deleting elastic ip --> ${eip_id:?}"
+  aws --region ${AWS_REGION:?} ec2 release-address --allocation-id ${eip_id:?}
   mv -f $starting_dir/provider/aws/${KEY_FILENAME:?}.pem $starting_dir/provider/aws/.${KEY_FILENAME:?}.pem.old.$(date +%s)
   mv -f $starting_dir/provider/aws/.info $starting_dir/provider/aws/.info.old.$(date +%s)
   touch $starting_dir/provider/aws/.info
@@ -253,6 +255,16 @@ create_onenode_instance() {
 	log "Instance ID: ${oneNodeInstanceId:?}"
 	aws --region ${AWS_REGION:?} ec2 create-tags --resources ${oneNodeInstanceId:?} --tags Key=owner,Value=${OWNER_TAG:?} Key=Name,Value=forkedOneNode-${OWNER_TAG:?} Key=enddate,Value=${ENDATE_TAG:?} Key=project,Value='personal development'
 	echo "oneNodeInstanceId=${oneNodeInstanceId:?}" >> $starting_dir/provider/aws/.info
+}
+
+#####################################################
+# Function to associate elastic ip to ec2 instance
+#####################################################
+associate_eip_2_instance() {
+    log "Associate Elastic IP to an instance"
+    AssociationID=`aws --output json --region ${AWS_REGION:?} ec2 associate-address --allocation-id ${eip_id:?} --instance-id ${oneNodeInstanceId:?}  | jq -r ".AssociationId"`
+    log "AssociationID: AssociationID"
+    echo "AssociationID=${AssociationID:?}" >> $starting_dir/provider/aws/.info
 }
 
 #####################################################
