@@ -263,7 +263,7 @@ create_onenode_instance() {
 associate_eip_2_instance() {
     log "Associate Elastic IP to an instance"
     AssociationID=`aws --output json --region ${AWS_REGION:?} ec2 associate-address --allocation-id ${eip_id:?} --instance-id ${oneNodeInstanceId:?}  | jq -r ".AssociationId"`
-    log "AssociationID: AssociationID"
+    log "ElasticIP AssociationID: --> ${AssociationID:?}"
     echo "AssociationID=${AssociationID:?}" >> $starting_dir/provider/aws/.info
 }
 
