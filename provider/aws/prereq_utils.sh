@@ -71,7 +71,7 @@ create_prereqs() {
   echo "eip_id=${eip_id:?}" >> $starting_dir/provider/aws/.info
   aws --region ${AWS_REGION:?} ec2 create-tags --resources ${eip_id:?} --tags Key=owner,Value=${OWNER_TAG:?} Key=Name,Value=${OWNER_TAG:?}-eip
   eip_public_ip=`aws ec2 describe-addresses --allocation-ids ${eip_id:?} | jq -r ".Addresses[0].PublicIp"`
-  echo "eip_public_ip=${eip_public_ip:?} >> $starting_dir/provider/aws/.info
+  echo "eip_public_ip=${eip_public_ip:?}" >> $starting_dir/provider/aws/.info
  
   ##################################################### 
   # create route table
