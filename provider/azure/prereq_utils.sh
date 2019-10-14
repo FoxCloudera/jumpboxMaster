@@ -173,3 +173,27 @@ replicate_key() {
 	ls ${KEY_FILE_PATH}
 	cp ${KEY_FILE_PATH}${KEY_FILENAME} ${BIND_MNT_TARGET}/${BIND_FILENAME}
 }
+
+#####################################################
+# Function to create instance
+#####################################################
+create_onenode_instance() {
+	log "Create oneNode azure instance"
+#	az vm create \
+#  --resource-group tlepple-rg-cli \
+#  --name tlepple-vm-cli \
+#  --image cloudera:cloudera-centos-os:7_4:2.0.7 \
+#  --admin-username centos \
+#  --ssh-key-values "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDN1x4AA2Kk5g4O1jeemLDwkhkWuTSxDrdfIvegxRXjSX7H3yhn+ha/wqzOP69XAZ+CIKG9ExW4IC/dgwNk367y9hBM5F/ObmHSkr/wJiZ7rR3RG4TTw9K4g6kn2jMHoI9SmxfQWvmJuGLguLpSZ1kncC6emPFsR+lN+7uHB7AI6JJwbW9j1QphfO8GrR0ob0DhuPFQpoMPfL+iaI2Q28yI8p+KXYV63kIHlcGsAZIy5U6MqftC4V2A2dEZZWor/BbNHpxDB09dXzafz3yEZHMKq6+fANb3Tmygc4uAQNc3WUwX8MT/l3nvA8e25XkZqkCEFoiAYlP+JujZLld63zND tlepple@clouderaazure.com" \
+#  --data-disk-sizes-gb 20 \
+#  --size Standard_DS2_v2 \
+#  --storage-sku Standard_LRS \
+#  --location westus2 \
+#  --public-ip-address-allocation static \
+#  --tags owner=tlepple project="personal development" enddate=permanent
+	az vm create --resource-group ${AZ_RG_NAME:?} --name ${OWNER_TAG:?}-vm-cli --image ${AZURE_IMAGE:?} --admin-username ${SSH_USERNAME:?} --ssh-key-values $starting_dir/provider/azure/mykeys/azure_ssh_key.pub --data-disk-sizes-gb 20 --size ${ONE_NODE_INSTANCE:?} --location ${AZURE_REGION:?} --public-ip-address-allocation static --tags owner=tlepple project="personal development" enddate=permanent
+
+
+	log "Instance ID: ${oneNodeInstanceId:?}"
+	echo "oneNodeInstanceId=${oneNodeInstanceId:?}" >> $starting_dir/provider/azure/.info
+}
