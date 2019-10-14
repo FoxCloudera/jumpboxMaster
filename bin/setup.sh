@@ -54,6 +54,7 @@ case "$CLOUD_PROVIDER" in
             ;;
         azure)
            echo "execute azure code here"
+            . /app/jumpboxMaster/provider/azure/azure_setup.sh
             ;;
         gcp)
            echo "execute gcp code here"
