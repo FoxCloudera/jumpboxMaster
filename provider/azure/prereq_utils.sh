@@ -39,6 +39,19 @@ create_prereqs() {
   echo "az_rg_create_status --> " ${az_rg_create_status}
   echo "AZ_RG_NAME=${OWNER_TAG:?}-rg-cli" >> $starting_dir/provider/azure/.info
   log "New resource group created in ${AZURE_REGION:?} name --> ${OWNER_TAG:?}-rg-cli"
+
+  #####################################################
+  # create ssh key pair
+  #####################################################
+  log "Create the ssh key pair files..."
+  mkdir -p $starting_dir/provider/azure/mykeys
+
+  ssh-keygen -t rsa -b 2048 -C ${AZ_USER:?} -f $starting_dir/provider/azure/mykeys/azure_ssh_key
+  chmod 0400 $starting_dir/provider/azure/mykeys/azure_ssh_key
+  echo "KEY_FILENAME=azure_ssh_key" >> $starting_dir/provider/azure/.info
+  echo "KEY_FILE_PATH=${starting_dir}/provider/azure/" >> $starting_dir/provider/azure/.info
+  export KEY_FILENAME=azure_ssh_key
+  export KEY_FILE_PATH=${starting_dir}/provider/azure/
   
 
 }
@@ -51,6 +64,7 @@ create_prereqs() {
   log "Deleting resource group ${AZ_RG_NAME:?}..."
   az group delete --name ${AZ_RG_NAME:?} --yes
   mv -f $starting_dir/provider/azure/.info $starting_dir/provider/azure/.info.old.$(date +%s)
+  mv -f $starting_dir/provider/azure/mykeys $starting_dir/provider/azure/.mykeys.old.$(date +%s)
   touch $starting_dir/provider/azure/.info
   cd $starting_dir
 
@@ -144,4 +158,18 @@ login_azure_cli() {
     az login -u ${AZ_USER:?} -p ${AZ_PWD:?}
   fi
 
+}
+
+#####################################################
+# Function to copy key file to a bind mount
+#####################################################
+replicate_key() {
+
+    # build a unique filename for this pem key
+	BIND_FILENAME=${OWNER_TAG}-${AZURE_REGION}-${oneNodeInstanceId}-${ONENODE_PRIVATE_IP}
+        echo "BIND_FILENAME=${BIND_FILENAME:?}" >> $starting_dir/provider/azure/.info
+	echo "file to copy is --> " ${KEY_FILE_PATH}${KEY_FILENAME}
+	echo "listing file contents ..."
+	ls ${KEY_FILE_PATH}
+	cp ${KEY_FILE_PATH}${KEY_FILENAME} ${BIND_MNT_TARGET}/${BIND_FILENAME}
 }
