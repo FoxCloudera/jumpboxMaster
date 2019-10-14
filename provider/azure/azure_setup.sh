@@ -42,3 +42,10 @@ login_azure_cli
 if [ $setup_prereqs = true ]; then 
   create_prereqs
 fi
+
+#####################################################
+#       Step 3: create azure vm instance 
+#####################################################
+if [ $setup_onenode = true ]; then
+  create_onenode_instance
+fi

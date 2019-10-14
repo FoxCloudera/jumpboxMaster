@@ -191,9 +191,9 @@ create_onenode_instance() {
 #  --location westus2 \
 #  --public-ip-address-allocation static \
 #  --tags owner=tlepple project="personal development" enddate=permanent
-	az vm create --resource-group ${AZ_RG_NAME:?} --name ${OWNER_TAG:?}-vm-cli --image ${AZURE_IMAGE:?} --admin-username ${SSH_USERNAME:?} --ssh-key-values $starting_dir/provider/azure/mykeys/azure_ssh_key.pub --data-disk-sizes-gb 20 --size ${ONE_NODE_INSTANCE:?} --location ${AZURE_REGION:?} --public-ip-address-allocation static --tags owner=tlepple project="personal development" enddate=permanent
+	vm-create-output=`az vm create --resource-group ${AZ_RG_NAME:?} --name ${OWNER_TAG:?}-vm-cli --image ${AZURE_IMAGE:?} --admin-username ${SSH_USERNAME:?} --ssh-key-values $starting_dir/provider/azure/mykeys/azure_ssh_key.pub --data-disk-sizes-gb 20 --size ${ONE_NODE_INSTANCE:?} --location ${AZURE_REGION:?} --public-ip-address-allocation static --tags owner=tlepple project="personal development" enddate=permanent`
 
-
-	log "Instance ID: ${oneNodeInstanceId:?}"
-	echo "oneNodeInstanceId=${oneNodeInstanceId:?}" >> $starting_dir/provider/azure/.info
+	echo ${vm-creat-output:?}
+#	log "Instance ID: ${oneNodeInstanceId:?}"
+#	echo "oneNodeInstanceId=${oneNodeInstanceId:?}" >> $starting_dir/provider/azure/.info
 }
