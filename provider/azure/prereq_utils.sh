@@ -46,7 +46,7 @@ create_prereqs() {
   log "Create the ssh key pair files..."
   mkdir -p $starting_dir/provider/azure/mykeys
 
-  ssh-keygen -t rsa -b 2048 -C ${AZ_USER:?} -f $starting_dir/provider/azure/mykeys/azure_ssh_key
+  ssh-keygen -t rsa -b 2048 -C ${AZ_USER:?} -f $starting_dir/provider/azure/mykeys/azure_ssh_key -q -P ""
   chmod 0400 $starting_dir/provider/azure/mykeys/azure_ssh_key
   echo "KEY_FILENAME=azure_ssh_key" >> $starting_dir/provider/azure/.info
   echo "KEY_FILE_PATH=${starting_dir}/provider/azure/" >> $starting_dir/provider/azure/.info
