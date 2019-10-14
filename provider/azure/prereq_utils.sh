@@ -63,7 +63,7 @@ create_prereqs() {
   terminate_prereqs() {
   log "Deleting resource group ${AZ_RG_NAME:?}..."
   echo
-  echo "The delete process could run for up to 15 min, don't panic and kill it...  It started at: " date
+  echo "The delete process could run for up to 15 min, don't panic and kill it...  It started at: " $(date)
   echo
   az group delete --name ${AZ_RG_NAME:?} --yes
   mv -f $starting_dir/provider/azure/.info $starting_dir/provider/azure/.info.old.$(date +%s)
@@ -196,7 +196,7 @@ create_onenode_instance() {
 #  --tags owner=tlepple project="personal development" enddate=permanent
 	vm-create-output=`az vm create --resource-group ${AZ_RG_NAME:?} --name ${OWNER_TAG:?}-vm-cli --image ${AZURE_IMAGE:?} --admin-username ${SSH_USERNAME:?} --ssh-key-values $starting_dir/provider/azure/mykeys/azure_ssh_key.pub --data-disk-sizes-gb 20 --size ${ONE_NODE_INSTANCE:?} --location ${AZURE_REGION:?} --public-ip-address-allocation static --tags owner=tlepple project="personal development" enddate=permanent`
 
-	echo ${vm-create-output:?}
+	echo $vm-create-output
 #	log "Instance ID: ${oneNodeInstanceId:?}"
 #	echo "oneNodeInstanceId=${oneNodeInstanceId:?}" >> $starting_dir/provider/azure/.info
 }
