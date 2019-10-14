@@ -122,13 +122,8 @@ install_azure_cli() {
 		# import the rpm key
 		rpm --import https://packages.microsoft.com/keys/microsoft.asc
 
-		# create the repo file location
-		sh -c 'echo -e "[azure-cli]
-		name=Azure CLI
-		baseurl=https://packages.microsoft.com/yumrepos/azure-cli
-		enabled=1
-		gpgcheck=1
-		gpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/azure-cli.repo'
+		# copy the repo file to /etc/yum.repos.d
+		cp /app/jumpboxMaster/provider/azure/files/template.azure-cli.repo /etc/yum.repos.d/azure-cli.repo
 
 		#  Install azure-cli
 		yum install -y azure-cli
