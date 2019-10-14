@@ -62,6 +62,9 @@ create_prereqs() {
   #####################################################
   terminate_prereqs() {
   log "Deleting resource group ${AZ_RG_NAME:?}..."
+  echo
+  echo "The delete process could run for up to 15 min, don't panic and kill it...  It started at: " date
+  echo
   az group delete --name ${AZ_RG_NAME:?} --yes
   mv -f $starting_dir/provider/azure/.info $starting_dir/provider/azure/.info.old.$(date +%s)
   mv -f $starting_dir/provider/azure/mykeys $starting_dir/provider/azure/.mykeys.old.$(date +%s)
