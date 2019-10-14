@@ -31,7 +31,7 @@ create_prereqs() {
 #  --name ${OWNER_TAG:?}-rg-cli \
 #  --tags owner=${OWNER_TAG:?}  project="personal development" enddate=permanent
 
-  az_rg_create_status=`az group create --location ${AZURE_REGION:?} --name ${OWNER_TAG:?}-rg-cli --tags owner=${OWNER_TAG:?}  project="personal development" enddate=permanent |jb -r ".properties.provisioningState"`
+  az_rg_create_status=`az group create --location ${AZURE_REGION:?} --name ${OWNER_TAG:?}-rg-cli --tags owner=${OWNER_TAG:?}  project="personal development" enddate=permanent |jq -r ".properties.provisioningState"`
   if [ "${az_rg_create_status}" != "Succeeded" ]; then
     log "Resource group could not be created."
     exit 1
