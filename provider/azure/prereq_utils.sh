@@ -137,3 +137,16 @@ install_azure_cli() {
 
 }
 
+#####################################################
+# Function: Azure cli login 
+#####################################################
+login_azure_cli() {
+
+  if [ "${AZ_USER}" = "" ] || [ "${AZ_PWD}" = "" ]; then
+    log "Azure credentials have not been exported. Please export AZ_USER and AZ_PWD and try again. Exiting..."
+    exit 1
+  else
+    az login -u ${AZ_USER:?} -p ${AZ_PWD:?}
+  fi
+
+}
