@@ -105,9 +105,9 @@ install_azure_cli() {
  	# then install Azure CLI
 	#####################################################
   	log "Installing AZURE_CLI"
-  	azure_cli_version=`az --version | grep azure-cli |awk '{print $2}'`
+  	azure_cli_version=`az --version | grep azure-cli`
   	log "Current CLI version: $azure_cli_version"
-  	if [[ ${azure_cli_version} = *"azure-cli"*]]; then
+  	if [[ ${azure_cli_version} = *"azure-cli"* ]]; then
     		log "Azure CLI already installed. Skipping"
     		return
   	fi
