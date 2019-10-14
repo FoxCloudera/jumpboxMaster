@@ -36,8 +36,9 @@ create_prereqs() {
     log "Resource group could not be created."
     exit 1
   fi
+  echo "az_rg_create_status --> " ${az_rg_create_status}
   echo "AZ_RG_NAME=${OWNER_TAG:?}-rg-cli" >> $starting_dir/provider/azure/.info
-  log "New resource group created in ${AZURE_REGION:?} name --> {OWNER_TAG:?}-rg-cli"
+  log "New resource group created in ${AZURE_REGION:?} name --> ${OWNER_TAG:?}-rg-cli"
   
 
 }
