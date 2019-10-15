@@ -70,6 +70,7 @@ create_prereqs() {
   mv -f $starting_dir/provider/azure/.info $starting_dir/provider/azure/.info.old.$(date +%s)
   mv -f $starting_dir/provider/azure/mykeys $starting_dir/provider/azure/.mykeys.old.$(date +%s)
   touch $starting_dir/provider/azure/.info
+  rm -f ${BIND_MNT_TARGET:?}/${BIND_FILENAME:?}
   cd $starting_dir
 
 }
