@@ -201,7 +201,8 @@ create_onenode_instance() {
 #####################################################
 # Function to add network access
 #####################################################
-add_ip_access_rule ($1) {
+add_ip_access_rule () {
+	arg_ip_in=$1
 
 	rule_priority_array=`az network nsg show   --resource-group tlepple-rg-cli --name tlepple-vm-cliNSG  | jq ".securityRules[].priority"`
 	# need to find the largest rule number and add 1
@@ -219,7 +220,7 @@ add_ip_access_rule ($1) {
 	   --priority ${rule_priority:?} \
 	   --destination-port-range '*' \
 	   --access Allow \
-	   --source-address-prefixes $1/32 \
+	   --source-address-prefixes ${arg_ip_in:?}/32 \
 	   --destination-address-prefixes '*' 
 
 }
