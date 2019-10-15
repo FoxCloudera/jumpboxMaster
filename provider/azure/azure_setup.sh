@@ -58,6 +58,11 @@ if [ $setup_prereqs = true ]; then
 fi
 
 #####################################################
-#       Step 5: Generate connection strings
+#       Step 5: Add IP address to access list
+#####################################################
+. $starting_dir/provider/azure/add_current_ip_access.sh
+
+#####################################################
+#       Step 6: Generate connection strings
 #####################################################
 . $starting_dir/provider/azure/echo_conn_strings.sh

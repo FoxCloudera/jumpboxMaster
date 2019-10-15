@@ -50,9 +50,9 @@ create_prereqs() {
   ssh-keygen -t rsa -b 2048 -C ${AZ_USER:?} -f $starting_dir/provider/azure/mykeys/azure_ssh_key -q -P ""
   chmod 0400 $starting_dir/provider/azure/mykeys/azure_ssh_key
   echo "KEY_FILENAME=azure_ssh_key" >> $starting_dir/provider/azure/.info
-  echo "KEY_FILE_PATH=${starting_dir}/provider/azure/" >> $starting_dir/provider/azure/.info
+  echo "KEY_FILE_PATH=${starting_dir}/provider/azure/mykeys/" >> $starting_dir/provider/azure/.info
   export KEY_FILENAME=azure_ssh_key
-  export KEY_FILE_PATH=${starting_dir}/provider/azure/
+  export KEY_FILE_PATH=${starting_dir}/provider/azure/mykeys/
   
 
 }
