@@ -184,7 +184,7 @@ replicate_key() {
 #####################################################
 create_onenode_instance() {
 	log "Create oneNode azure instance"
-	az vm create --resource-group ${AZ_RG_NAME:?} --name ${OWNER_TAG:?}-vm-cli --image ${AZURE_IMAGE:?} --admin-username ${SSH_USERNAME:?} --ssh-key-values $starting_dir/provider/azure/mykeys/azure_ssh_key.pub --data-disk-sizes-gb 50 100 --size ${ONE_NODE_INSTANCE:?} --location ${AZURE_REGION:?} --public-ip-address-allocation static --tags owner=tlepple project="personal development" enddate=permanent
+	az vm create --resource-group ${AZ_RG_NAME:?} --name ${OWNER_TAG:?}-vm-cli --image ${AZURE_IMAGE:?} --admin-username ${SSH_USERNAME:?} --ssh-key-values $starting_dir/provider/azure/mykeys/azure_ssh_key.pub --data-disk-sizes-gb 100 --size ${ONE_NODE_INSTANCE:?} --location ${AZURE_REGION:?} --public-ip-address-allocation static --tags owner=tlepple project="personal development" enddate=permanent
 	echo
 	echo "get instance status..."
 	AZ_VM_OUTPUT=`az vm show  --name ${OWNER_TAG:?}-vm-cli --resource-group ${OWNER_TAG:?}-rg-cli --show-details --output json`
