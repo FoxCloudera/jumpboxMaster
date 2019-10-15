@@ -222,6 +222,6 @@ add_ip_access_rule () {
 	   --access Allow \
 	   --source-address-prefixes ${arg_ip_in:?}/32 \
 	   --destination-address-prefixes '*' 
-	log "added rule for IP --> ${arg_ip_in:}"
+	log "added rule for IP --> ${arg_ip_in:?}"
 
 }
