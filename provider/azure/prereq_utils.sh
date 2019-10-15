@@ -38,6 +38,7 @@ create_prereqs() {
   fi
   echo "az_rg_create_status --> " ${az_rg_create_status}
   echo "AZ_RG_NAME=${OWNER_TAG:?}-rg-cli" >> $starting_dir/provider/azure/.info
+  export AZ_RG_NAME=${OWNER_TAG:?}-rg-cli
   log "New resource group created in ${AZURE_REGION:?} name --> ${OWNER_TAG:?}-rg-cli"
 
   #####################################################
@@ -182,21 +183,43 @@ replicate_key() {
 #####################################################
 create_onenode_instance() {
 	log "Create oneNode azure instance"
-#	az vm create \
-#  --resource-group tlepple-rg-cli \
-#  --name tlepple-vm-cli \
-#  --image cloudera:cloudera-centos-os:7_4:2.0.7 \
-#  --admin-username centos \
-#  --ssh-key-values "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDN1x4AA2Kk5g4O1jeemLDwkhkWuTSxDrdfIvegxRXjSX7H3yhn+ha/wqzOP69XAZ+CIKG9ExW4IC/dgwNk367y9hBM5F/ObmHSkr/wJiZ7rR3RG4TTw9K4g6kn2jMHoI9SmxfQWvmJuGLguLpSZ1kncC6emPFsR+lN+7uHB7AI6JJwbW9j1QphfO8GrR0ob0DhuPFQpoMPfL+iaI2Q28yI8p+KXYV63kIHlcGsAZIy5U6MqftC4V2A2dEZZWor/BbNHpxDB09dXzafz3yEZHMKq6+fANb3Tmygc4uAQNc3WUwX8MT/l3nvA8e25XkZqkCEFoiAYlP+JujZLld63zND tlepple@clouderaazure.com" \
-#  --data-disk-sizes-gb 20 \
-#  --size Standard_DS2_v2 \
-#  --storage-sku Standard_LRS \
-#  --location westus2 \
-#  --public-ip-address-allocation static \
-#  --tags owner=tlepple project="personal development" enddate=permanent
-	azure_vm_instance_output=`az vm create --resource-group ${AZ_RG_NAME:?} --name ${OWNER_TAG:?}-vm-cli --image ${AZURE_IMAGE:?} --admin-username ${SSH_USERNAME:?} --ssh-key-values $starting_dir/provider/azure/mykeys/azure_ssh_key.pub --data-disk-sizes-gb 20 --size ${ONE_NODE_INSTANCE:?} --location ${AZURE_REGION:?} --public-ip-address-allocation static --tags owner=tlepple project="personal development" enddate=permanent` | jq ".[]"
+	az vm create --resource-group ${AZ_RG_NAME:?} --name ${OWNER_TAG:?}-vm-cli --image ${AZURE_IMAGE:?} --admin-username ${SSH_USERNAME:?} --ssh-key-values $starting_dir/provider/azure/mykeys/azure_ssh_key.pub --data-disk-sizes-gb 20 --size ${ONE_NODE_INSTANCE:?} --location ${AZURE_REGION:?} --public-ip-address-allocation static --tags owner=tlepple project="personal development" enddate=permanent
+	echo
+	echo "get instance status..."
+	AZ_VM_OUTPUT=`az vm show  --name ${OWNER_TAG:?}-vm-cli --resource-group ${OWNER_TAG:?}-rg-cli --show-details --output json`
+	ONENODE_PRIVATE_IP=`echo ${AZ_VM_OUTPUT:?} | jq -r '.privateIps'`
+	ONENODE_PUBLIC_IP=`echo ${AZ_VM_OUTPUT:?} | jq -r '.publicIps'`
+	log "Private IP: ${ONENODE_PRIVATE_IP:?}"
+	log "Public IP :${ONENODE_PUBLIC_IP:?}"
+	log "Instance ID: ${OWNER_TAG:?}-vm-cli"
+	echo "oneNodeInstanceId=${OWNER_TAG:?}-vm-cli" >> $starting_dir/provider/azure/.info
+	export oneNodeInstanceId=${OWNER_TAG:?}-vm-cli
+	echo "ONENODE_PRIVATE_IP=${ONENODE_PRIVATE_IP:?}" >> $starting_dir/provider/azure/.info
+	echo "ONENODE_PUBLIC_IP=${ONENODE_PUBLIC_IP:?}" >> $starting_dir/provider/azure/.info
+}
 
-	echo ${azure_vm_instance_output:?}
-#	log "Instance ID: ${oneNodeInstanceId:?}"
-#	echo "oneNodeInstanceId=${oneNodeInstanceId:?}" >> $starting_dir/provider/azure/.info
+#####################################################
+# Function to add network access
+#####################################################
+add_ip_access_rule ($1) {
+
+	rule_priority_array=`az network nsg show   --resource-group tlepple-rg-cli --name tlepple-vm-cliNSG  | jq ".securityRules[].priority"`
+	# need to find the largest rule number and add 1
+        max=0
+	for i in ${rule_priority_array[@]}; do
+	   if (( $i > $max )); then max=$i; fi;
+	done
+	rule_priority=$(( $max + 1 ))
+	# create the new rule
+	az network nsg rule create \
+	   --resource-group ${AZ_RG_NAME:?} \
+	   --nsg-name ${oneNodeInstanceId:?}NSG \
+	   --name allowIPrule$(date +%s) \
+	   --protocol Tcp \
+	   --priority ${rule_priority:?} \
+	   --destination-port-range '*' \
+	   --access Allow \
+	   --source-address-prefixes $1/32 \
+	   --destination-address-prefixes '*' 
+
 }

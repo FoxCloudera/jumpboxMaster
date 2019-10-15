@@ -61,7 +61,7 @@ OWNER_TAG=<your userid here>
 AWS_RGION=<your region here>
 
 # set the docker bind mount properties
-BIND_MNT_SOURCE="/Users/$USER/Documents/aws_scripts/docker_bind_mnt"
+BIND_MNT_SOURCE="/Users/<replace with your username>/Documents/aws_scripts/docker_bind_mnt"
 BIND_MNT_TARGET="/macmnt"
 
 # I will fix this soon
