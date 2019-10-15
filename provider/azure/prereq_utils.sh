@@ -232,7 +232,7 @@ add_ip_access_rule () {
 replicate_key() {
 
     # build a unique filename for this pem key
-	BIND_FILENAME=${OWNER_TAG:?}-${AZ_RG_NAME:?}-${oneNodeInstanceId:}-${ONENODE_PRIVATE_IP:?}
+	BIND_FILENAME=${OWNER_TAG:?}-${AZ_RG_NAME:?}-${oneNodeInstanceId:?}-${ONENODE_PRIVATE_IP:?}
         echo "BIND_FILENAME=${BIND_FILENAME:?}" >> $starting_dir/provider/azure/.info
 	echo "file to copy is --> " ${KEY_FILE_PATH}${KEY_FILENAME}
 	echo "listing file contents ..."
