@@ -28,14 +28,14 @@ cd ~
 mkdir -p ./Documents/aws_scripts/docker_bind_mnt
 
 # create a softlink to this directory
-sudo ln -s /Users/madmin/Documents/aws_scripts/docker_bind_mnt /macmnt
+sudo ln -s /Users/$USER/Documents/aws_scripts/docker_bind_mnt /macmnt
 
 # run a new docker container with this volume from centos image
 
  docker run -it \
   --name centos_bind_jumpbox \
   --mount source=dual-mnt-vol1,target=/app \
-  --mount type=bind,source=/Users/madmin/Documents/aws_scripts/docker_bind_mnt,target=/macmnt \
+  --mount type=bind,source=/Users/$USER/Documents/aws_scripts/docker_bind_mnt,target=/macmnt \
   centos:7 bash
   
 ```
@@ -61,7 +61,7 @@ OWNER_TAG=<your userid here>
 AWS_RGION=<your region here>
 
 # set the docker bind mount properties
-BIND_MNT_SOURCE="/Users/<your username here>/Documents/aws_scripts/docker_bind_mnt"
+BIND_MNT_SOURCE="/Users/$USER/Documents/aws_scripts/docker_bind_mnt"
 BIND_MNT_TARGET="/macmnt"
 
 # I will fix this soon
