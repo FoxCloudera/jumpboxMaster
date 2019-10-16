@@ -197,6 +197,8 @@ create_onenode_instance() {
 	export oneNodeInstanceId=${OWNER_TAG:?}-vm-cli
 	echo "ONENODE_PRIVATE_IP=${ONENODE_PRIVATE_IP:?}" >> $starting_dir/provider/azure/.info
 	echo "ONENODE_PUBLIC_IP=${ONENODE_PUBLIC_IP:?}" >> $starting_dir/provider/azure/.info
+	# add the IP to access list with below function:
+	add_ip_access_rule ${ONENODE_PUBLIC_IP:?}
 }
 
 #####################################################
