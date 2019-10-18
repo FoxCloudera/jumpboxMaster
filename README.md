@@ -74,6 +74,8 @@ setup_prereqs=false and update the values of security group and subnet ID to you
 
 ##  Build your instance:
 
+### Run these commands if building in AWS
+
 ```
 export AWS_ACCESS_KEY_ID=<your key>
 export AWS_SECRET_ACCESS_KEY=<your secret key>
@@ -83,7 +85,18 @@ cd /app/jumpboxMaster
 . bin/setup.sh aws
 ```
 
-##  Terminate all aws items: 
+###  Run these commands if building in Azure
+```
+export AZ_USER=<Azure username>
+export AZ_PWD=<Azure password>
+
+cd /app/jumpboxMaster
+. bin/setup.sh azure
+```
+---
+---
+
+##  Terminate all AWS items: 
 * VPC, Security Groups, Route Tables, Subnet, Internet Gateway, PEM File and EC2 Instance.
 
 ```
@@ -102,6 +115,12 @@ cd /app/jumpboxMaster
 
 ---
 ---
+
+##  Terminate Azure items
+```
+cd /app/jumpboxMaster
+. provider/azure/terminate_everything.sh
+```
 ##  Useful docker command reference:
 ---
 ---
@@ -138,6 +157,7 @@ docker volume rm dual-mnt-vol1
 ```
 cd /app/jumpboxMaster
 . bin/start_instance.sh
+
 ```
 
 # Stop a running Cloud Instance:
