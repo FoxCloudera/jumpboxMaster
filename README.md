@@ -174,15 +174,34 @@ docker volume rm dual-mnt-vol1
 ---
 
 
-# Start a stopped Cloud Instance (Currently only works with AWS)
+## Start a stopped Cloud Instance (Currently only works with AWS)
 ```
 cd /app/jumpboxMaster
 . bin/start_instance.sh
 
 ```
 
-# Stop a running Cloud Instance (Currently only works with AWS):
+## Stop a running Cloud Instance (Currently only works with AWS):
 ```
 cd /app/jumpboxMaster
 . bin/stop_instance.sh
+```
+
+---
+---
+
+##  To allow an IP Address access to server run the command for your provider below:
+
+*  This is only needed if you need access from a different public IP than where you originally created the instance
+
+###  Add IP to AWS instance:
+```
+cd /app/jumpboxMaster
+. /provider/aws/add_current_ip_access.sh
+```
+
+### Add IP to Azure instance:
+```
+cd /app/jumpboxMaster
+. /provider/azure/add_current_ip_access.sh
 ```
