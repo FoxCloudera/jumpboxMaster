@@ -52,7 +52,9 @@ cd /app/jumpboxMaster
 
 ```
 
-##  Update `demo.properties` with your info.
+##  Update `demo.properties` with your info for each provider
+
+### AWS File:
 
 ```
 vi ./provider/aws/demo.properties
@@ -71,6 +73,19 @@ AMI_ID=<centos ami for your region>
 
 setup_prereqs=false and update the values of security group and subnet ID to yours from your VPC.
 ```
+
+### Azure File:
+```
+vi ./provider/azure/demo.properties
+
+OWNER_TAG=<your userid here>
+AZURE_REGION=<your Azure region>
+
+# set the docker bind mount properties
+BIND_MNT_SOURCE="/Users/<replace with your username>/Documents/aws_scripts/docker_bind_mnt"
+BIND_MNT_TARGET="/macmnt"
+```
+---
 
 ##  Build your instance:
 
