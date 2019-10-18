@@ -3,7 +3,7 @@
 #  The goal of this repo is to setup cloud security components and build out instances.
 
 ## Notes:
-*  Currently only works on AWS.   More to come soon...
+*  Currently only works on AWS and Azure.   More to come soon...
 *  This was built and tested on Docker Version: 19.03.1
 *  This assumes you already have Docker installed
 
@@ -136,9 +136,11 @@ cd /app/jumpboxMaster
 cd /app/jumpboxMaster
 . provider/azure/terminate_everything.sh
 ```
+
+---
+---
+
 ##  Useful docker command reference:
----
----
 
 
 ```
@@ -168,14 +170,18 @@ docker volume rm dual-mnt-vol1
 
 ```
 
-# Start a stopped Cloud Instance:
+---
+---
+
+
+# Start a stopped Cloud Instance (Currently only works with AWS)
 ```
 cd /app/jumpboxMaster
 . bin/start_instance.sh
 
 ```
 
-# Stop a running Cloud Instance:
+# Stop a running Cloud Instance (Currently only works with AWS):
 ```
 cd /app/jumpboxMaster
 . bin/stop_instance.sh
