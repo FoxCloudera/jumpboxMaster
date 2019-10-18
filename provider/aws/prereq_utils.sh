@@ -143,6 +143,7 @@ terminate_prereqs() {
   aws --region ${AWS_REGION:?} ec2 release-address --allocation-id ${eip_id:?}
   mv -f $starting_dir/provider/aws/${KEY_FILENAME:?}.pem $starting_dir/provider/aws/.${KEY_FILENAME:?}.pem.old.$(date +%s)
   mv -f $starting_dir/provider/aws/.info $starting_dir/provider/aws/.info.old.$(date +%s)
+  rm -f ${BIND_MNT_TARGET:?}/${BIND_FILENAME:?}.pem
   touch $starting_dir/provider/aws/.info
   cd $starting_dir
 }
@@ -322,4 +323,17 @@ replicate_key() {
 	echo "listing file contents ..."
 	ls ${KEY_FILE_PATH}
 	cp ${KEY_FILE_PATH}${KEY_FILENAME}.pem ${BIND_MNT_TARGET}/${BIND_FILENAME}
+}
+
+#####################################################
+# Function to add network access
+#####################################################
+add_ip_access_rule () {
+	arg_ip_in=$1
+	
+	# add the IP address to the security group for access
+	aws --region ${AWS_REGION:?} ec2 authorize-security-group-ingress --group-id ${sg:?} --protocol tcp --port 0-65535 --cidr ${arg_ip_in:?}/32
+
+	log "added rule for IP --> ${arg_ip_in:?}"
+
 }
